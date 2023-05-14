@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AdminModule } from './admin/admin.module';
+
 import { validation } from './commons/utils';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -16,6 +18,7 @@ import { PrismaModule } from './prisma/prisma.module';
       validationSchema: validation,
     }),
     PrismaModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { DMMFClass } from '@prisma/client/runtime';
 import AdminJS from 'adminjs';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 AdminJS.registerAdapter({ Database, Resource });
 
@@ -21,6 +22,7 @@ const authenticate = async (email: string, password: string) => {
 
 @Module({
   imports: [
+    PrismaModule,
     AdminJsModule.createAdminAsync({
       useFactory: () => {
         const prisma = new PrismaClient();
@@ -36,61 +38,22 @@ const authenticate = async (email: string, password: string) => {
               {
                 resource: { model: dmmf.modelMap.Post, client: prisma },
                 options: {
-                  actions: {
-                    new: {
-                      before: async (request) => {
-                        const { categoryName } = request.payload;
-
-                        if (categoryName) {
-                          const category = await prisma.category.create({
-                            data: { name: categoryName },
-                          });
-                          request.payload = {
-                            ...request.payload,
-                            categoryId: category.id,
-                          };
-                        }
-
-                        return request;
-                      },
-                    },
-                  },
                   properties: {
                     content: {
-                      type: 'richtext', // Enable the rich text editor
+                      type: 'richtext',
                       custom: {
-                        format: 'markdown', // Specify the format as Markdown
-                      },
-                    },
-                    'category.name': {
-                      isVisible: {
-                        list: true,
-                        filter: true,
-                        show: true,
-                        edit: false,
-                        new: true,
-                      },
-                    },
-                    categoryId: {
-                      type: 'reference',
-                      reference: 'Category',
-                      isVisible: {
-                        list: false,
-                        filter: true,
-                        show: false,
-                        edit: false,
-                        new: false,
+                        format: 'markdown',
                       },
                     },
                     category: {
                       type: 'reference',
                       reference: 'Category',
                       isVisible: {
-                        list: false,
-                        filter: false,
+                        new: true,
+                        list: true,
+                        filter: true,
                         show: true,
                         edit: true,
-                        new: false,
                       },
                     },
                   },

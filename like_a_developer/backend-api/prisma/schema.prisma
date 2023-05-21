@@ -28,7 +28,7 @@ model Post {
   id            Int            @id @default(autoincrement())
   title         String         @db.VarChar(20) @unique
   content       String
-  Categories    Category[]        
+  categories    PostCategory[]
   author        User           @relation(fields: [authorId], references: [id])
   authorId      Int
   createdAt     DateTime       @default(now())
@@ -38,11 +38,21 @@ model Post {
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  name  String
-  Posts Post[]
+  id             Int           @id @default(autoincrement())
+  name          String
+  Posts         PostCategory[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt     
 
   @@map("category")
+}
+
+model PostCategory {
+  id             Int          @default(autoincrement())
+  post           Post         @relation(fields: [postId], references: [id])
+  postId         Int 
+  category       Category     @relation(fields: [categoryId], references: [id])
+  categoryId     Int 
+
+  @@id([id, postId, categoryId])
 }
